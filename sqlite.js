@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./youxue1.db');
+const db = new sqlite3.Database('/home/data/youxue1.db');
 const PriorityQueue = require('./PriorityQueue.js');
 db.serialize(function () {
   db.run("CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)");
