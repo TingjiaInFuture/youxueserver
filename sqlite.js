@@ -198,6 +198,18 @@ function getRecommendedDiaries() {
   });
 }
 
+function deleteDiary(diaryId) {
+  return new Promise((resolve, reject) => {
+    db.run("DELETE FROM Diaries WHERE id = ?", [diaryId], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
 
 module.exports = {
   checkUsername,
@@ -207,5 +219,6 @@ module.exports = {
   rateDiary,
   addDiary,
   viewDiary,
-  getRecommendedDiaries 
+  getRecommendedDiaries,
+  deleteDiary 
 };

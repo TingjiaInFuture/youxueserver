@@ -130,6 +130,17 @@ fastify.get("/diaries/recommended", async (request, reply) => {
   reply.status(status).send(data);
 });
 
+// 删除日记
+fastify.delete("/diaries/:id", async (request, reply) => {
+  let data = {};
+  data.success = await db.deleteDiary(request.params.id);
+  if (!data.success) {
+    data.error = "Failed to delete diary.";
+  }
+  const status = data.success ? 200 : 400;
+  reply.status(status).send(data);
+});
+
 
 // Run the server and report out to the logs
 fastify.listen({ port: 9000, host: '0.0.0.0' }, function (err, address) {
