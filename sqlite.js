@@ -4,6 +4,7 @@ const PriorityQueue = require('./PriorityQueue.js');
 db.serialize(function () {
   db.run("CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)");
   db.run("CREATE TABLE IF NOT EXISTS Diaries (id INTEGER PRIMARY KEY, diary TEXT, code TEXT, authorId INTEGER, viewCount INTEGER DEFAULT 0, rating REAL DEFAULT 0, ratingCount INTEGER DEFAULT 0)"); // 在Diaries表中添加code列
+  db.run("CREATE TABLE IF NOT EXISTS AreaStats (area TEXT PRIMARY KEY, views INTEGER DEFAULT 0, goods INTEGER DEFAULT 0, bads INTEGER DEFAULT 0)");
 });
 
 function checkUsername(username) {
@@ -104,6 +105,54 @@ function getDiaries() {
 function viewDiary(diaryId) {
   return new Promise((resolve, reject) => {
     db.run("UPDATE Diaries SET viewCount = viewCount + 1 WHERE id = ?", [diaryId], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function addArea(area) {
+  return new Promise((resolve, reject) => {
+    db.run("INSERT INTO AreaStats (area) VALUES (?)", [area], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.lastID);
+      }
+    });
+  });
+}
+
+function incrementViews(area) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET views = views + 1 WHERE area = ?", [area], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function incrementGoods(area) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET goods = goods + 1 WHERE area = ?", [area], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function incrementBads(area) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET bads = bads + 1 WHERE area = ?", [area], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -220,5 +269,9 @@ module.exports = {
   addDiary,
   viewDiary,
   getRecommendedDiaries,
-  deleteDiary 
+  deleteDiary,
+  incrementViews,
+  incrementGoods,
+  incrementBads,
+  addArea
 };

@@ -141,6 +141,50 @@ fastify.delete("/diaries/:id", async (request, reply) => {
   reply.status(status).send(data);
 });
 
+// 为地区增加浏览量
+fastify.put("/area/:name/views", async (request, reply) => {
+  let data = {};
+  data.success = await db.incrementViews(request.params.name);
+  if (!data.success) {
+    data.error = "Failed to update view count.";
+  }
+  const status = data.success ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 为地区增加点赞量
+fastify.put("/area/:name/goods", async (request, reply) => {
+  let data = {};
+  data.success = await db.incrementGoods(request.params.name);
+  if (!data.success) {
+    data.error = "Failed to update goods count.";
+  }
+  const status = data.success ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 为地区增加点踩量
+fastify.put("/area/:name/bads", async (request, reply) => {
+  let data = {};
+  data.success = await db.incrementBads(request.params.name);
+  if (!data.success) {
+    data.error = "Failed to update bads count.";
+  }
+  const status = data.success ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 添加新的地区
+fastify.post("/area", async (request, reply) => {
+  let data = {};
+  data.areaId = await db.addArea(request.body.name);
+  if (!data.areaId) {
+    data.error = "Failed to add area!";
+  }
+  const status = data.areaId ? 201 : 400;
+  reply.status(status).send(data);
+});
+
 
 // Run the server and report out to the logs
 fastify.listen({ port: 9000, host: '0.0.0.0' }, function (err, address) {
