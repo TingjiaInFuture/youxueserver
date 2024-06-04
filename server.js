@@ -186,6 +186,72 @@ fastify.post("/area", async (request, reply) => {
 });
 
 
+// 更新地区浏览量
+fastify.put("/area/:name/updateViews", async (request, reply) => {
+  let data = {};
+  data.success = await db.updateViews(request.params.name, request.body.views);
+  if (!data.success) {
+    data.error = "Failed to update views.";
+  }
+  const status = data.success ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 更新地区点赞量
+fastify.put("/area/:name/updateGoods", async (request, reply) => {
+  let data = {};
+  data.success = await db.updateGoods(request.params.name, request.body.goods);
+  if (!data.success) {
+    data.error = "Failed to update goods.";
+  }
+  const status = data.success ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 更新地区点踩量
+fastify.put("/area/:name/updateBads", async (request, reply) => {
+  let data = {};
+  data.success = await db.updateBads(request.params.name, request.body.bads);
+  if (!data.success) {
+    data.error = "Failed to update bads.";
+  }
+  const status = data.success ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 获取地区浏览量
+fastify.get("/area/:name/getViews", async (request, reply) => {
+  let data = {};
+  data.views = await db.getViews(request.params.name);
+  if (!data.views) {
+    data.error = "Failed to get views.";
+  }
+  const status = data.views ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 获取地区点赞量
+fastify.get("/area/:name/getGoods", async (request, reply) => {
+  let data = {};
+  data.goods = await db.getGoods(request.params.name);
+  if (!data.goods) {
+    data.error = "Failed to get goods.";
+  }
+  const status = data.goods ? 200 : 400;
+  reply.status(status).send(data);
+});
+
+// 获取地区点踩量
+fastify.get("/area/:name/getBads", async (request, reply) => {
+  let data = {};
+  data.bads = await db.getBads(request.params.name);
+  if (!data.bads) {
+    data.error = "Failed to get bads.";
+  }
+  const status = data.bads ? 200 : 400;
+  reply.status(status).send(data);
+});
+
 // Run the server and report out to the logs
 fastify.listen({ port: 9000, host: '0.0.0.0' }, function (err, address) {
   if (err) {

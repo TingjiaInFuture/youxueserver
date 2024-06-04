@@ -260,6 +260,78 @@ function deleteDiary(diaryId) {
 }
 
 
+function updateViews(area, views) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET views = ? WHERE area = ?", [views, area], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function updateGoods(area, goods) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET goods = ? WHERE area = ?", [goods, area], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function updateBads(area, bads) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET bads = ? WHERE area = ?", [bads, area], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function getViews(area) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT views FROM AreaStats WHERE area = ?", [area], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row ? row.views : null);
+      }
+    });
+  });
+}
+
+function getGoods(area) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT goods FROM AreaStats WHERE area = ?", [area], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row ? row.goods : null);
+      }
+    });
+  });
+}
+
+function getBads(area) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT bads FROM AreaStats WHERE area = ?", [area], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row ? row.bads : null);
+      }
+    });
+  });
+}
+
 module.exports = {
   checkUsername,
   addUser,
@@ -273,5 +345,11 @@ module.exports = {
   incrementViews,
   incrementGoods,
   incrementBads,
-  addArea
+  addArea,
+  updateViews,
+  updateGoods,
+  updateBads,
+  getViews,
+  getGoods,
+  getBads
 };
