@@ -239,6 +239,16 @@ fastify.get("/area/:id/getBads", async (request, reply) => {
   reply.status(status).send(data);
 });
 
+// Get all areas
+fastify.get("/getAreas", async (request, reply) => {
+  const Areas = await db.getAreas();
+  if (!Areas) {
+    reply.status(400).send(errorMessage);
+  } else {
+    reply.status(200).send(Areas);
+  }
+});
+
 // Run the server and report out to the logs
 fastify.listen({ port: 9000, host: '0.0.0.0' }, function (err, address) {
   if (err) {

@@ -338,6 +338,18 @@ function getBads(id) {
   });
 }
 
+function getAreas() {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM AreaStats", [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 module.exports = {
   checkUsername,
   addUser,
@@ -357,5 +369,6 @@ module.exports = {
   updateBads,
   getViews,
   getGoods,
-  getBads
+  getBads,
+  getAreas
 };
