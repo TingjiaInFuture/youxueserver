@@ -3,8 +3,8 @@ const db = new sqlite3.Database('/home/data/youxue1.db');
 const PriorityQueue = require('./PriorityQueue.js');
 db.serialize(function () {
   db.run("CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)");
-  db.run("CREATE TABLE IF NOT EXISTS Diaries (id INTEGER PRIMARY KEY, diary TEXT, code TEXT, authorId INTEGER, viewCount INTEGER DEFAULT 0, rating REAL DEFAULT 0, ratingCount INTEGER DEFAULT 0)"); // 在Diaries表中添加code列
-  db.run("CREATE TABLE IF NOT EXISTS AreaStats (area TEXT PRIMARY KEY, views INTEGER DEFAULT 0, goods INTEGER DEFAULT 0, bads INTEGER DEFAULT 0)");
+  db.run("CREATE TABLE IF NOT EXISTS Diaries (id INTEGER PRIMARY KEY, diary TEXT, code TEXT, authorId INTEGER, viewCount INTEGER DEFAULT 0, rating REAL DEFAULT 0, ratingCount INTEGER DEFAULT 0)");
+  db.run("CREATE TABLE IF NOT EXISTS AreaStats (id INTEGER PRIMARY KEY, area TEXT, views INTEGER DEFAULT 0, goods INTEGER DEFAULT 0, bads INTEGER DEFAULT 0)");
 });
 
 function checkUsername(username) {
@@ -63,7 +63,7 @@ function addDiary(diary, authorId) {
       if (err) {
         reject(err);
       } else {
-        resolve(this.lastID);
+        resolve();
       }
     });
   });
@@ -114,53 +114,9 @@ function viewDiary(diaryId) {
   });
 }
 
-function addArea(area) {
-  return new Promise((resolve, reject) => {
-    db.run("INSERT INTO AreaStats (area) VALUES (?)", [area], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(this.lastID);
-      }
-    });
-  });
-}
 
-function incrementViews(area) {
-  return new Promise((resolve, reject) => {
-    db.run("UPDATE AreaStats SET views = views + 1 WHERE area = ?", [area], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(this.changes > 0);
-      }
-    });
-  });
-}
 
-function incrementGoods(area) {
-  return new Promise((resolve, reject) => {
-    db.run("UPDATE AreaStats SET goods = goods + 1 WHERE area = ?", [area], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(this.changes > 0);
-      }
-    });
-  });
-}
 
-function incrementBads(area) {
-  return new Promise((resolve, reject) => {
-    db.run("UPDATE AreaStats SET bads = bads + 1 WHERE area = ?", [area], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(this.changes > 0);
-      }
-    });
-  });
-}
 
 function huffmanCompress(diary) {
   let freq = {};
@@ -260,9 +216,23 @@ function deleteDiary(diaryId) {
 }
 
 
-function updateViews(area, views) {
+
+
+function addArea(area) {
   return new Promise((resolve, reject) => {
-    db.run("UPDATE AreaStats SET views = ? WHERE area = ?", [views, area], function (err) {
+    db.run("INSERT INTO AreaStats (area) VALUES (?)", [area], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.lastID);
+      }
+    });
+  });
+}
+
+function incrementViews(id) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET views = views + 1 WHERE id = ?", [id], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -272,9 +242,9 @@ function updateViews(area, views) {
   });
 }
 
-function updateGoods(area, goods) {
+function incrementGoods(id) {
   return new Promise((resolve, reject) => {
-    db.run("UPDATE AreaStats SET goods = ? WHERE area = ?", [goods, area], function (err) {
+    db.run("UPDATE AreaStats SET goods = goods + 1 WHERE id = ?", [id], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -284,9 +254,9 @@ function updateGoods(area, goods) {
   });
 }
 
-function updateBads(area, bads) {
+function incrementBads(id) {
   return new Promise((resolve, reject) => {
-    db.run("UPDATE AreaStats SET bads = ? WHERE area = ?", [bads, area], function (err) {
+    db.run("UPDATE AreaStats SET bads = bads + 1 WHERE id = ?", [id], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -296,9 +266,45 @@ function updateBads(area, bads) {
   });
 }
 
-function getViews(area) {
+function updateViews(id, views) {
   return new Promise((resolve, reject) => {
-    db.get("SELECT views FROM AreaStats WHERE area = ?", [area], (err, row) => {
+    db.run("UPDATE AreaStats SET views = ? WHERE id = ?", [views, id], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function updateGoods(id, goods) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET goods = ? WHERE id = ?", [goods, id], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function updateBads(id, bads) {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE AreaStats SET bads = ? WHERE id = ?", [bads, id], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes > 0);
+      }
+    });
+  });
+}
+
+function getViews(id) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT views FROM AreaStats WHERE id = ?", [id], (err, row) => {
       if (err) {
         reject(err);
       } else {
@@ -308,9 +314,9 @@ function getViews(area) {
   });
 }
 
-function getGoods(area) {
+function getGoods(id) {
   return new Promise((resolve, reject) => {
-    db.get("SELECT goods FROM AreaStats WHERE area = ?", [area], (err, row) => {
+    db.get("SELECT goods FROM AreaStats WHERE id = ?", [id], (err, row) => {
       if (err) {
         reject(err);
       } else {
@@ -320,9 +326,9 @@ function getGoods(area) {
   });
 }
 
-function getBads(area) {
+function getBads(id) {
   return new Promise((resolve, reject) => {
-    db.get("SELECT bads FROM AreaStats WHERE area = ?", [area], (err, row) => {
+    db.get("SELECT bads FROM AreaStats WHERE id = ?", [id], (err, row) => {
       if (err) {
         reject(err);
       } else {
